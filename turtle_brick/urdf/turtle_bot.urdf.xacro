@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro"  name="turtlebot">
+    <xacro:include filename="usefulstuff.xacro" />
+
+    <xacro:property name="stem_length" value="1" />
+    <xacro:property name="wheel_radius" value="0.5" />
+
+    <link name="world"></link>
+
+    <joint name="base_joint" type="fixed">
+        <origin xyz="0 0 1" rpy="0 0 0"/>
+        <parent link="world"/>
+        <child link="base_link"/>        
+    </joint>
+
+    <link name="base_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="1 1 .5" />
+            </geometry>
+            <material name="cyan"/>
+        </visual>
+    </link>
+
+
+
+    <link name="stem_link">
+        <visual>
+            <origin xyz="0 0 ${stem_length/2}" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="${stem_length}" radius="0.1" />
+            </geometry>
+            <material name="grey"/>
+        </visual>
+    </link>
+
+</robot>
