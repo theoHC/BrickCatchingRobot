@@ -15,6 +15,6 @@
   <!-- rviz will enable us to see the robot -->
   <node pkg="rviz2" exec="rviz2" args="-d $(find-pkg-share turtle_brick)/peruse_turtle.rviz"/>
 
-  <node pkg="turtlesim" exec="turtlesim"/>
+  <node pkg="turtlesim" exec="turtlesim_node"/>
 
 </launch>
