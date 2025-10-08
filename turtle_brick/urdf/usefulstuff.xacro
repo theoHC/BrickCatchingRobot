@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
     <!-- Specify some colours -->
 
-    <material name="green">
+    <material name="grey">
         <color rgba=".6 .6 .6 1"/>
     </material>
 
@@ -12,5 +12,9 @@
 
     <material name="yellow">
         <color rgba="1 1 0 1"/>
+    </material>
+
+    <material name="purple">
+        <color rgba="1 0 1 1"/>
     </material>
 </robot>
