@@ -62,20 +62,36 @@
       <material name="yellow"/>
     </visual>
   </link>
-  <!-- <joint name="stem_joint" type="revolute">
-        <origin xyz="0 0 -.25" rpy="0 0 0"/>
-        <parent link="base_link"/>
-        <child link="stem_link"/>
-        <axis xyz="0 0 1"/>   
-    </joint>
-
-    <link name="stem_link">
-        <visual>
-            <origin xyz="0 0 -.25" rpy="${pi/2} 0 0"/>
-            <geometry>
-                <cylinder length=".2" radius="0.1" />
-            </geometry>
-            <material name="purple"/>
-        </visual>
-    </link> -->
+  <joint name="stem_joint" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 -.25"/>
+    <parent link="base_link"/>
+    <child link="stem_link"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="100" lower="-3.141592653589793" upper="3.141592653589793" velocity="100"/>
+  </joint>
+  <link name="stem_link">
+    <visual>
+      <origin rpy="3.141592653589793 0 0" xyz="0 0 -.1"/>
+      <geometry>
+        <cylinder length=".2" radius="0.2"/>
+      </geometry>
+      <material name="purple"/>
+    </visual>
+  </link>
+  <joint name="wheel_joint" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 -0.7"/>
+    <parent link="stem_link"/>
+    <child link="wheel_link"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="100" lower="-3.141592653589793" upper="3.141592653589793" velocity="100"/>
+  </joint>
+  <link name="wheel_link">
+    <visual>
+      <origin rpy="1.5707963267948966 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length=".2" radius="0.5"/>
+      </geometry>
+      <material name="purple"/>
+    </visual>
+  </link>
 </robot>
