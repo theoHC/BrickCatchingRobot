@@ -43,23 +43,22 @@ class TurtleRobot(Node):
         self.setup_odom = False
 
     def pose_callback(self, pose):
-        time = self.get_clock().now().to_msg()
         if not self.setup_odom:
             self.setup_odom = True
             world_odom_tf = TransformStamped()
             world_odom_tf.header.frame_id = 'world'
             world_odom_tf.child_frame_id = 'odom'
-            world_odom_tf.header.stamp = time
+            world_odom_tf.header.stamp = self.get_clock().now().to_msg()
             world_odom_tf.transform.translation = Vector3(x=pose.x, y=pose.y, z=0.0)
             self.static_broadcaster.sendTransform(world_odom_tf)
 
             self.startloc = (pose.x, pose.y)
         
         odom_bot_tf = TransformStamped()
-        odom_bot_tf.header.stamp = time
         odom_bot_tf.header.frame_id = 'odom'
         odom_bot_tf.child_frame_id = 'base_link'
         odom_bot_tf.transform.translation=Vector3(x=pose.x - self.startloc[0], y=pose.y - self.startloc[1], z=0.0)
 
+        odom_bot_tf.header.stamp = self.get_clock().now().to_msg()
         self.broadcaster.sendTransform(odom_bot_tf)
 
