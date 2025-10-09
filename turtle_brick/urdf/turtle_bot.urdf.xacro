@@ -1,10 +1,16 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro"  name="turtlebot">
-    <xacro:include filename="usefulstuff.xacro" />
+    
+    <xacro:include filename="$(find turtle_brick)/usefulstuff.xacro" />
 
-    <xacro:property name="platform_height" value="1" />
+    <!-- ########## Begin_Citation[1] ##########-->
+    <xacro:property name="yaml" value="$(find turtle_brick)/turtle.yaml" />
+    <xacro:property name="config" value="${xacro.load_yaml(yaml)}"/>
+
     <xacro:property name="platform_radius" value="1" />
-    <xacro:property name="wheel_radius" value="0.5" />
+    <xacro:property name="platform_height" value="${config['platform_height']}" />
+    <xacro:property name="wheel_radius" value="${config['wheel_radius']}" />
+    <!-- ########## End_Citation[1] ##########-->
 
     <link name="base_link">
         <visual>
