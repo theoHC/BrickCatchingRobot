@@ -1,5 +1,5 @@
 <launch>
-    <arg name="use_jsp" default="gui" description="Which robot to show: slide or chained"/>
+    <arg name="use_jsp" default="gui" description="The joint state publisher to use: 'gui' 'jsp' [no gui, internal control] or 'none'."/>
 
 
     <node pkg="robot_state_publisher" exec="robot_state_publisher">
@@ -19,4 +19,5 @@
         <param name="holonomic" value="true"/>
     </node>
 
+    <node pkg="turtle_brick" exec="turtlebot"/>
 </launch>
