@@ -5,7 +5,9 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /Status1
+        - /Grid1
+        - /Grid1/Offset1
+        - /RobotModel1
         - /RobotModel1/Description Topic1
       Splitter Ratio: 0.5
     Tree Height: 693
@@ -41,8 +43,8 @@ Visualization Manager:
       Name: Grid
       Normal Cell Count: 0
       Offset:
-        X: 0
-        Y: 0
+        X: 5.400000095367432
+        Y: 5.400000095367432
         Z: 0
       Plane: XY
       Plane Cell Count: 10
@@ -102,7 +104,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: base_link
+    Fixed Frame: world
     Frame Rate: 30
   Name: root
   Tools:
@@ -145,7 +147,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 22.047012329101562
+      Distance: 27.729412078857422
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -160,10 +162,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.13539829850196838
+      Pitch: 0.6503978967666626
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.5403971672058105
+      Yaw: 1.5153974294662476
     Saved: ~
 Window Geometry:
   Displays:

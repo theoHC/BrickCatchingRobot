@@ -10,6 +10,7 @@ from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 from turtlesim_msgs.msg import Pose
+from sensor_msgs.msg import JointState
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 
 def main(args=None):
@@ -40,6 +41,10 @@ class TurtleRobot(Node):
 
         self.turtle_listener = self.create_subscription(Pose, '/turtle1/pose', self.pose_callback, 10)
 
+        self.timer = self.create_timer(1/100, self.timer_callback)
+
+        self.bot_joints = self.create_publisher(JointState, '/joint_states', 10)
+
         self.setup_odom = False
 
     def pose_callback(self, pose):
@@ -53,12 +58,17 @@ class TurtleRobot(Node):
             self.static_broadcaster.sendTransform(world_odom_tf)
 
             self.startloc = (pose.x, pose.y)
+        self.pose = pose
         
-        odom_bot_tf = TransformStamped()
-        odom_bot_tf.header.frame_id = 'odom'
-        odom_bot_tf.child_frame_id = 'base_link'
-        odom_bot_tf.transform.translation=Vector3(x=pose.x - self.startloc[0], y=pose.y - self.startloc[1], z=0.0)
 
-        odom_bot_tf.header.stamp = self.get_clock().now().to_msg()
-        self.broadcaster.sendTransform(odom_bot_tf)
+    def timer_callback(self):
+        self.get_logger().info('Tick callback')
+        if self.setup_odom:
+            odom_bot_tf = TransformStamped()
+            odom_bot_tf.header.frame_id = 'odom'
+            odom_bot_tf.child_frame_id = 'base_link'
+            odom_bot_tf.transform.translation=Vector3(x=self.pose.x - self.startloc[0], y=self.pose.y - self.startloc[1], z=0.0)
 
+            odom_bot_tf.header.stamp = self.get_clock().now().to_msg()
+            self.broadcaster.sendTransform(odom_bot_tf)
+        

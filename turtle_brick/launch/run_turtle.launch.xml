@@ -1,0 +1,14 @@
+<launch>
+    <include file="$(find-pkg-share turtle_brick)/show_turtle.launch.xml">
+        <arg name="use_jsp" value="jsp"/>
+    </include>
+
+    <node pkg="turtlesim" exec="turtlesim_node">
+        <param name="holonomic" value="true"/>
+    </node>
+
+    <node pkg="turtle_brick" exec="turtlebot"/>
+    
+    <node pkg="rviz2" exec="rviz2" args="-d $(find-pkg-share turtle_brick)/run_turtle.rviz"/>
+
+</launch>

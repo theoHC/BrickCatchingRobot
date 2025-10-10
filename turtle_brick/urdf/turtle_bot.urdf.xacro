@@ -1,15 +1,17 @@
-<?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro"  name="turtlebot">
     
-    <xacro:include filename="$(find turtle_brick)/usefulstuff.xacro" />
+    <!-- <xacro:include filename="$(find turtle_brick)/usefulstuff.xacro" /> -->
+    <xacro:include filename="usefulstuff.xacro" />
 
     <!-- ########## Begin_Citation[1] ##########-->
     <xacro:property name="yaml" value="$(find turtle_brick)/turtle.yaml" />
     <xacro:property name="config" value="${xacro.load_yaml(yaml)}"/>
 
     <xacro:property name="platform_radius" value="1" />
-    <xacro:property name="platform_height" value="${config['platform_height']}" />
-    <xacro:property name="wheel_radius" value="${config['wheel_radius']}" />
+    <!-- <xacro:property name="platform_height" value="${config['platform_height']}" />
+    <xacro:property name="wheel_radius" value="${config['wheel_radius']}" /> -->
+        <xacro:property name="platform_height" value="1" />
+    <xacro:property name="wheel_radius" value="$1" />
     <!-- ########## End_Citation[1] ##########-->
 
     <link name="base_link">
@@ -38,12 +40,11 @@
         </visual>
     </link>
 
-    <joint name="platform_joint" type="revolute">
+    <joint name="platform_joint" type="continuous">
         <origin xyz="0 0 ${platform_height + .05}" rpy="0 0 0"/>
         <parent link="pillar_link"/>
         <child link="platform_link"/>
         <axis xyz="0 1 0"/>
-        <limit lower="0" upper="${pi/4}" velocity="100" effort="100"/>
     </joint>
 
     <link name="platform_link">
@@ -56,12 +57,11 @@
     </visual>
     </link>
 
-    <joint name="stem_joint" type="revolute">
+    <joint name="stem_joint" type="continuous">
         <origin xyz="0 0 -.25" rpy="0 0 0"/>
         <parent link="base_link"/>
         <child link="stem_link"/>
         <axis xyz="0 0 1"/>
-        <limit lower="${-1*pi}" upper="${pi}" velocity="100" effort="100"/>
     </joint>
 
     <link name="stem_link">

@@ -1,3 +1,0 @@
-I collaborated with: Adnet, Saif, Robert, Ben, Derek, Florian, Shawin
-
-[1] Syntax for loading from yaml files elucidated by Robert
