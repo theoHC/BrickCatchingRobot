@@ -5,7 +5,7 @@
     <node pkg="robot_state_publisher" exec="robot_state_publisher">
     <!-- load the urdf into the parameter server -->
     <!-- A plain urdf file is also a valid xacro file so we use xacro here for convenience only -->
-        <param name="robot_description" value="$(command '$(exec-in-pkg xacro xacro) $(find-pkg-share turtle_brick)/test.urdf.xacro')" />
+        <param name="robot_description" value="$(command '$(exec-in-pkg xacro xacro) $(find-pkg-share turtle_brick)/turtle_bot.urdf.xacro')" />
     </node>
 
   <!-- The joint state publisher will be launched with a gui, read the urdf from /robot_description
