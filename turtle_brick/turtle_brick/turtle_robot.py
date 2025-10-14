@@ -12,6 +12,7 @@ from tf2_ros.transform_listener import TransformListener
 from turtlesim_msgs.msg import Pose
 from sensor_msgs.msg import JointState
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
+from turtle_brick_interfaces.msg import Tilt
 
 def main(args=None):
     rclpy.init(args=args)
@@ -36,6 +37,10 @@ class TurtleRobot(Node):
         self.declare_parameter('frequency', 90)
         self.declare_parameter('max_velocity', 1)
 
+        self.setup_odom = False
+
+        self.curtilt = 0
+
         self.special_callback = MutuallyExclusiveCallbackGroup()
 
         self.static_broadcaster = StaticTransformBroadcaster(self)
@@ -44,11 +49,11 @@ class TurtleRobot(Node):
 
         self.turtle_listener = self.create_subscription(Pose, '/turtle1/pose', self.pose_callback, 10)
 
+        self.tilt_listener = self.create_subscription(Tilt, 'tilt', self.pose_callback, 10)
+
         self.timer = self.create_timer(1/self.get_parameter('frequency'), self.timer_callback)
 
         self.bot_joints = self.create_publisher(JointState, '/joint_states', 10)
-
-        self.setup_odom = False
 
     def pose_callback(self, pose):
         if not self.setup_odom:
@@ -62,7 +67,6 @@ class TurtleRobot(Node):
 
             self.startloc = (pose.x, pose.y)
         self.pose = pose
-        
 
     def timer_callback(self):
         self.get_logger().info('Tick callback')
@@ -77,7 +81,7 @@ class TurtleRobot(Node):
         
         joints = JointState()
         joints.name = ["platform_joint", "stem_joint", "wheel_joint"]
-        joints.position = [0,0,0]
+        joints.position = [self.curtilt,0,0]
 
         joints.header.stamp = self.get_clock().now().to_msg()
         self.bot_joints.publish(joints)
