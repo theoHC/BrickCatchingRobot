@@ -33,6 +33,9 @@ class TurtleRobot(Node):
     def __init__(self):
         super().__init__('turtle_robot')
 
+        self.declare_parameter('frequency', 90)
+        self.declare_parameter('max_velocity', 1)
+
         self.special_callback = MutuallyExclusiveCallbackGroup()
 
         self.static_broadcaster = StaticTransformBroadcaster(self)
@@ -41,7 +44,7 @@ class TurtleRobot(Node):
 
         self.turtle_listener = self.create_subscription(Pose, '/turtle1/pose', self.pose_callback, 10)
 
-        self.timer = self.create_timer(1/100, self.timer_callback)
+        self.timer = self.create_timer(1/self.get_parameter('frequency'), self.timer_callback)
 
         self.bot_joints = self.create_publisher(JointState, '/joint_states', 10)
 
@@ -71,4 +74,11 @@ class TurtleRobot(Node):
 
             odom_bot_tf.header.stamp = self.get_clock().now().to_msg()
             self.broadcaster.sendTransform(odom_bot_tf)
+        
+        joints = JointState()
+        joints.name = ["platform_joint", "stem_joint", "wheel_joint"]
+        joints.position = [0,0,0]
+
+        joints.header.stamp = self.get_clock().now().to_msg()
+        self.bot_joints.publish(joints)
         

@@ -69,12 +69,11 @@
         </visual>
     </link>
 
-    <joint name="wheel_joint" type="revolute">
+    <joint name="wheel_joint" type="continuous">
         <origin xyz="0 0 ${-1 * wheel_radius -0.2}" rpy="0 0 0"/>
         <parent link="stem_link"/>
         <child link="wheel_link"/>
         <axis xyz="0 1 0"/>
-        <limit lower="${-1*pi}" upper="${pi}" velocity="100" effort="100"/>
     </joint>
 
     <link name="wheel_link">

@@ -1,3 +1,7 @@
 platform_height: 2.0
 
 wheel_radius: 0.1
+
+max_velocity: 1.0
+
+gravity_accel: 5
