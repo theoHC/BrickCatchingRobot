@@ -15,6 +15,7 @@ from geometry_msgs.msg import PoseStamped
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from geometry_msgs.msg import Twist, PoseStamped
 from turtle_brick_interfaces.msg import Tilt
+import numpy as np
 
 def main(args=None):
     rclpy.init(args=args)
@@ -36,8 +37,10 @@ class TurtleRobot(Node):
     def __init__(self):
         super().__init__('turtle_robot')
 
-        self.declare_parameter('frequency', 90)
+        self.declare_parameter('frequency', 20)
         self.declare_parameter('max_velocity', 1)
+
+        self.robotheight = 1.5
 
         self.setup_odom = False
 
@@ -70,7 +73,7 @@ class TurtleRobot(Node):
             world_odom_tf.header.frame_id = 'world'
             world_odom_tf.child_frame_id = 'odom'
             world_odom_tf.header.stamp = self.get_clock().now().to_msg()
-            world_odom_tf.transform.translation = Vector3(x=pose.x, y=pose.y, z=0.0)
+            world_odom_tf.transform.translation = Vector3(x=pose.x, y=pose.y, z=self.robotheight)
             self.static_broadcaster.sendTransform(world_odom_tf)
 
             self.startloc = (pose.x, pose.y)
@@ -88,6 +91,7 @@ class TurtleRobot(Node):
         self.goalloc = (loc.x, loc.y)
 
     def timer_callback(self):
+        wheelsteer = 0.0
         # self.get_logger().info('Tick callback')
         if self.setup_odom:
             odom_bot_tf = TransformStamped()
@@ -110,13 +114,15 @@ class TurtleRobot(Node):
                 turtleTwist.linear.y = vectorToGoal[1]
 
                 self.turtle_commander.publish(turtleTwist)
+
+                wheelsteer = np.arctan2(vectorToGoal[1], vectorToGoal[0])
             else:
                 turtleTwist = Twist()
                 self.turtle_commander.publish(turtleTwist)
         
         joints = JointState()
         joints.name = ["platform_joint", "stem_joint", "wheel_joint"]
-        joints.position = [self.curtilt,0,0]
+        joints.position = [self.curtilt,wheelsteer,0]
 
         joints.header.stamp = self.get_clock().now().to_msg()
         self.bot_joints.publish(joints)

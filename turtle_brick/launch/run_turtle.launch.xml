@@ -7,7 +7,8 @@
         <param name="holonomic" value="true"/>
     </node>
 
-    <node pkg="turtle_brick" exec="turtlebot"/>
+    <node pkg="turtle_brick" exec="turtlebot">
+    </node>
     
     <node pkg="rviz2" exec="rviz2" args="-d $(find-pkg-share turtle_brick)/run_turtle.rviz"/>
 
