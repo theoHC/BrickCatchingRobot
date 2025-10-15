@@ -72,6 +72,8 @@ class TurtleRobot(Node):
         
         self.turtle_commander = self.create_publisher(Twist, '/turtle1/cmd_vel', 10)
 
+        self.odometer = self.create_publisher(Odometry, '/odom', 10)
+
     def pose_callback(self, pose):
         if not self.setup_odom:
             self.setup_odom = True
@@ -109,12 +111,13 @@ class TurtleRobot(Node):
 
             goalDist = distBetweeinPoints(self.goalloc, (self.pose.x, self.pose.y))
 
+            turtleTwist = Twist()
+
             if goalDist > 0.1:
                 vel = self.get_parameter('max_velocity').value
 
                 vectorToGoal = (vel * (self.goalloc[0]-self.pose.x)/goalDist, vel * (self.goalloc[1]-self.pose.y)/goalDist)
 
-                turtleTwist = Twist()
                 turtleTwist.linear.x = vectorToGoal[0]
                 turtleTwist.linear.y = vectorToGoal[1]
 
@@ -122,10 +125,19 @@ class TurtleRobot(Node):
 
                 self.wheelsteer = np.arctan2(vectorToGoal[1], vectorToGoal[0])
                 self.curwheel += vel / self.get_parameter('frequency').value / self.get_parameter('wheel_radius').value
-            else:
-                turtleTwist = Twist()
-                self.turtle_commander.publish(turtleTwist)
+
+            self.turtle_commander.publish(turtleTwist)
+
+            odometry = Odometry()
+            odometry.pose.pose.position.x = self.pose.x
+            odometry.pose.pose.position.y = self.pose.y
+            odometry.velocity.twist = turtleTwist
+            odometry.header.stamp = self.get_clock().now().to_msg()
+            odometry.header.frame_id = 'odom'
+
+            self.odometer.publish(odometry)
         
+        # Publish joint states
         joints = JointState()
         joints.name = ["platform_joint", "stem_joint", "wheel_joint"]
         joints.position = [self.curtilt,self.wheelsteer,self.curwheel]
