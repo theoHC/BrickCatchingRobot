@@ -1,5 +1,4 @@
 from math import pi
-
 from geometry_msgs.msg import Quaternion
 from geometry_msgs.msg import TransformStamped
 from geometry_msgs.msg import Vector3
@@ -16,7 +15,7 @@ from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from geometry_msgs.msg import Twist, PoseStamped, TwistWithCovariance, PoseWithCovariance
 from nav_msgs.msg import Odometry
 from turtle_brick_interfaces.msg import Tilt
-import numpy as np
+from numpy import arctan2
 
 def main(args=None):
     rclpy.init(args=args)
@@ -123,7 +122,7 @@ class TurtleRobot(Node):
 
                 self.turtle_commander.publish(turtleTwist)
 
-                self.wheelsteer = np.arctan2(vectorToGoal[1], vectorToGoal[0])
+                self.wheelsteer = arctan2(vectorToGoal[1], vectorToGoal[0])
                 self.curwheel += vel / self.get_parameter('frequency').value / self.get_parameter('wheel_radius').value
 
             self.turtle_commander.publish(turtleTwist)
