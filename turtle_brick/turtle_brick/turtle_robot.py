@@ -13,7 +13,8 @@ from turtlesim_msgs.msg import Pose
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import PoseStamped
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
-from geometry_msgs.msg import Twist, PoseStamped
+from geometry_msgs.msg import Twist, PoseStamped, TwistWithCovariance, PoseWithCovariance
+from nav_msgs.msg import Odometry
 from turtle_brick_interfaces.msg import Tilt
 import numpy as np
 
@@ -39,12 +40,17 @@ class TurtleRobot(Node):
 
         self.declare_parameter('frequency', 20)
         self.declare_parameter('max_velocity', 1)
+        self.declare_parameter('wheel_radius', 0.5)
 
         self.robotheight = 1.5
 
         self.setup_odom = False
 
         self.curtilt = 0
+
+        self.curwheel = 0.0
+
+        self.wheelsteer = 0.0
 
         self.goalloc = None
 
@@ -91,7 +97,6 @@ class TurtleRobot(Node):
         self.goalloc = (loc.x, loc.y)
 
     def timer_callback(self):
-        wheelsteer = 0.0
         # self.get_logger().info('Tick callback')
         if self.setup_odom:
             odom_bot_tf = TransformStamped()
@@ -115,14 +120,15 @@ class TurtleRobot(Node):
 
                 self.turtle_commander.publish(turtleTwist)
 
-                wheelsteer = np.arctan2(vectorToGoal[1], vectorToGoal[0])
+                self.wheelsteer = np.arctan2(vectorToGoal[1], vectorToGoal[0])
+                self.curwheel += vel / self.get_parameter('frequency').value / self.get_parameter('wheel_radius').value
             else:
                 turtleTwist = Twist()
                 self.turtle_commander.publish(turtleTwist)
         
         joints = JointState()
         joints.name = ["platform_joint", "stem_joint", "wheel_joint"]
-        joints.position = [self.curtilt,wheelsteer,0]
+        joints.position = [self.curtilt,self.wheelsteer,self.curwheel]
 
         joints.header.stamp = self.get_clock().now().to_msg()
         self.bot_joints.publish(joints)
