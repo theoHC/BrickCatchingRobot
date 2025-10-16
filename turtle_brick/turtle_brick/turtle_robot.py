@@ -38,8 +38,11 @@ class TurtleRobot(Node):
         super().__init__('turtle_robot')
 
         self.declare_parameter('frequency', 100)
+        self.frequency = self.get_parameter('frequency').value
         self.declare_parameter('max_velocity', 1)
+        self.max_velocity = self.get_parameter('max_velocity').value
         self.declare_parameter('wheel_radius', 0.5)
+        self.wheel_radius = self.get_parameter('wheel_radius').value
 
         self.setup_odom = False
 
@@ -63,7 +66,7 @@ class TurtleRobot(Node):
 
         self.goal_listener = self.create_subscription(PoseStamped, '/goal_pose', self.goal_callback, 10)
 
-        self.timer = self.create_timer(1/self.get_parameter('frequency').value, self.timer_callback)
+        self.timer = self.create_timer(1/self.frequency, self.timer_callback)
 
         self.bot_joints = self.create_publisher(JointState, '/joint_states', 10)
         
@@ -78,7 +81,7 @@ class TurtleRobot(Node):
             world_odom_tf.header.frame_id = 'world'
             world_odom_tf.child_frame_id = 'odom'
             world_odom_tf.header.stamp = self.get_clock().now().to_msg()
-            world_odom_tf.transform.translation = Vector3(x=pose.x, y=pose.y, z=2 * self.get_parameter('wheel_radius').value + .4)
+            world_odom_tf.transform.translation = Vector3(x=pose.x, y=pose.y, z=2 * self.wheel_radius + .4)
             self.static_broadcaster.sendTransform(world_odom_tf)
 
             self.startloc = (pose.x, pose.y)
@@ -121,7 +124,7 @@ class TurtleRobot(Node):
                 self.turtle_commander.publish(turtleTwist)
 
                 self.wheelsteer = arctan2(vectorToGoal[1], vectorToGoal[0])
-                self.curwheel += vel / self.get_parameter('frequency').value / self.get_parameter('wheel_radius').value
+                self.curwheel += vel / self.get_parameter('frequency').value / self.wheel_radius
 
             self.turtle_commander.publish(turtleTwist)
 
