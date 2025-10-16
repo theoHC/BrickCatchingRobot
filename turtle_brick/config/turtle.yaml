@@ -1,5 +1,5 @@
-platform_height: 2.0
-
-wheel_radius: .5
-
-gravity_accel: 5
+/**:
+  ros__parameters:
+    platform_height: 2.0
+    wheel_radius: 0.5
+    gravity_accel: 5

@@ -8,6 +8,7 @@
     </node>
 
     <node pkg="turtle_brick" exec="turtlebot">
+        <param from="$(find-pkg-share turtle_brick)/turtle.yaml"/>
     </node>
     
     <node pkg="rviz2" exec="rviz2" args="-d $(find-pkg-share turtle_brick)/run_turtle.rviz"/>
