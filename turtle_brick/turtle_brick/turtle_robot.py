@@ -37,11 +37,9 @@ class TurtleRobot(Node):
     def __init__(self):
         super().__init__('turtle_robot')
 
-        self.declare_parameter('frequency', 20)
+        self.declare_parameter('frequency', 100)
         self.declare_parameter('max_velocity', 1)
         self.declare_parameter('wheel_radius', 0.5)
-
-        self.robotheight = 1.5
 
         self.setup_odom = False
 
@@ -80,7 +78,7 @@ class TurtleRobot(Node):
             world_odom_tf.header.frame_id = 'world'
             world_odom_tf.child_frame_id = 'odom'
             world_odom_tf.header.stamp = self.get_clock().now().to_msg()
-            world_odom_tf.transform.translation = Vector3(x=pose.x, y=pose.y, z=self.robotheight)
+            world_odom_tf.transform.translation = Vector3(x=pose.x, y=pose.y, z=2 * self.get_parameter('wheel_radius').value + .4)
             self.static_broadcaster.sendTransform(world_odom_tf)
 
             self.startloc = (pose.x, pose.y)
