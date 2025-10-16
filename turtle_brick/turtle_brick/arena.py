@@ -36,7 +36,7 @@ class Arena(Node):
     def marker_timer_callback(self):
         # self.get_logger().info('arena node callback')
 
-        r, g, b = colorsys.hsv_to_rgb(self.h, 1.0, 1.0)
+        r, g, b = colorsys.hsv_to_rgb(self.h, .75, 1.0)
         self.h = (self.h + self.dh) % 1.0
 
         markerarr = MarkerArray()
