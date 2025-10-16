@@ -130,7 +130,7 @@ class TurtleRobot(Node):
             odometry = Odometry()
             odometry.pose.pose.position.x = self.pose.x
             odometry.pose.pose.position.y = self.pose.y
-            odometry.velocity.twist = turtleTwist
+            odometry.twist.twist = turtleTwist
             odometry.header.stamp = self.get_clock().now().to_msg()
             odometry.header.frame_id = 'odom'
 
