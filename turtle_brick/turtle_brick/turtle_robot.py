@@ -7,7 +7,6 @@ from rclpy.node import Node
 from tf2_ros import TransformBroadcaster
 from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
 from tf2_ros.buffer import Buffer
-from tf2_ros.transform_listener import TransformListener
 from turtlesim_msgs.msg import Pose
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import PoseStamped
