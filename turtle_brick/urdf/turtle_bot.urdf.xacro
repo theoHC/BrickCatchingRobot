@@ -15,6 +15,8 @@
     <xacro:property name="platform_radius" value="1" />
     <!-- End_Citation[1] -->
 
+    <xacro:property name="platform_offset" value="${platform_height - ((2 * wheel_radius) + .5 + .2)}" />
+
     <link name="base_link">
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -33,16 +35,16 @@
 
     <link name="pillar_link">
         <visual>
-            <origin xyz="0 0 ${(platform_height - ((2 * wheel_radius) + .5 + .2)) / 2}" rpy="0 0 0"/>
+            <origin xyz="0 0 ${platform_offset / 2}" rpy="0 0 0"/>
             <geometry>
-                <cylinder length="${platform_height - ((2 * wheel_radius) + .5 + .2)}" radius="0.1" />
+                <cylinder length="${platform_offset}" radius="0.1" />
             </geometry>
             <material name="grey"/>
         </visual>
     </link>
 
     <joint name="platform_joint" type="continuous">
-        <origin xyz="0 0 ${platform_height - ((2 * wheel_radius) + .5 + .2) + .05}" rpy="0 0 0"/>
+        <origin xyz="0 0 ${platform_offset + .05}" rpy="0 0 0"/>
         <parent link="pillar_link"/>
         <child link="platform_link"/>
         <axis xyz="0 1 0"/>

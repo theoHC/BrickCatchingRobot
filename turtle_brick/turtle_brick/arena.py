@@ -147,8 +147,6 @@ class Arena(Node):
 
             try:
                 self.platform_to_brick = self.transformbuffer.lookup_transform('platform_link', 'brick', rclpy.time.Time())
-                world_to_platform = self.transformbuffer.lookup_transform('world', 'platform_link', rclpy.time.Time())
-                self.get_logger().info(f'Transform is: {world_to_platform}')
             except tf2_ros.LookupException:
                 self.get_logger().info('Lookup Exception')
             except tf2_ros.ConnectivityException:
