@@ -34,6 +34,8 @@ def main(args=None):
 
 class Arena(Node):
     def __init__(self):
+        '''Initialize the arena node, setting up params, timers, publishers, services, and the physics world.
+        '''
         super().__init__('arena')
 
         self.declare_parameter('wall frequency', 60)
@@ -70,6 +72,12 @@ class Arena(Node):
 
 
     def wall_timer_callback(self):
+        '''Timer to place the walls and the brick markers. Cycles their colors through the spectrum of the rainbow.
+        Args:
+            None
+        Returns:
+            None
+        '''
         # self.get_logger().info('arena node callback')
 
         r, g, b = colorsys.hsv_to_rgb(self.h, .75, 1.0)
@@ -85,6 +93,18 @@ class Arena(Node):
         self.marker_publisher.publish(markerarr)
     
     def makecube(self, id, pos, scale, r, g, b, frame='world'):
+        '''Create a cube marker.
+        Args:
+            id - the marker id
+            pos - (x,y,z) position of the cube center
+            scale - (x,y,z) scale of the cube
+            r - red color component (0 to 1)
+            g - green color component (0 to 1)
+            b - blue color component (0 to 1)
+            frame - the reference frame of the cube
+        Returns:
+            marker - the cube marker
+        '''
         marker = Marker()
         marker.header.frame_id = frame
         marker.ns = 'arena'
@@ -125,6 +145,13 @@ class Arena(Node):
         self.broadcaster.sendTransform(self.bricktrans)
 
     def drop_callback(self, request, response):
+        '''Initiate the dropping of the brick if the brick is not already falling or in the process of being caught by the turtle.
+        Args:
+            request - Empty request
+            response - Empty response
+        Returns:
+            response - Empty response
+        '''
         if self.BrickState == BrickState.PLACED:
             self.get_logger().info('Dropping the brick!')
             self.BrickState = BrickState.SIM
@@ -134,6 +161,13 @@ class Arena(Node):
         return response
     
     def place_callback(self, request, response):
+        '''Place the brick at a specified location and reset its state to PLACED.
+        Args:
+            request - Place request containing the point to place the brick
+            response - Empty response
+        Returns:
+            response - Empty response
+        '''
         self.BrickState = BrickState.PLACED
         self.get_logger().info(f'Placing the brick at ({request.point.x}, {request.point.y}, {request.point.z})')
         self.bricktrans.transform.translation.x = request.point.x
