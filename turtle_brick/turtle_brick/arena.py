@@ -31,7 +31,7 @@ class Arena(Node):
     def __init__(self):
         super().__init__('arena')
 
-        self.declare_parameter('wall frequency', 20)
+        self.declare_parameter('wall frequency', 60)
         self.wall_frequency = self.get_parameter('wall frequency').value
 
         self.declare_parameter('physics frequency', 250)
@@ -59,13 +59,15 @@ class Arena(Node):
         # self.get_logger().info('arena node callback')
 
         r, g, b = colorsys.hsv_to_rgb(self.h, .75, 1.0)
+        br, bg, bb = colorsys.hsv_to_rgb((self.h + 0.5) % 1.0, .75, 1.0)
         self.h = (self.h + self.dh) % 1.0
 
         markerarr = MarkerArray()
         markerarr.markers = [self.makecube(0, (5.75, -.5, .5), (11.5, 1.0, 1.0), r, g, b),
                              self.makecube(1, (-.5, 5.75, .5), (1.0, 13.5, 1.0), r, g, b),
                              self.makecube(2, (5.75, 12.0, .5), (11.5, 1.0, 1.0), r, g, b),
-                             self.makecube(3, (12.0, 5.75, .5), (1.0, 13.5, 1.0), r, g, b)]
+                             self.makecube(3, (12.0, 5.75, .5), (1.0, 13.5, 1.0), r, g, b),
+                             self.makecube(4, (0,0,.25), (.5, .5, .5), br, bg, bb, frame='brick')]
         self.marker_publisher.publish(markerarr)
     
     def makecube(self, id, pos, scale, r, g, b, frame='world'):
@@ -98,3 +100,7 @@ class Arena(Node):
     
     def physics_timer_callback(self):
         if self.BrickState == BrickState.PLACED:
+            pass
+
+        self.bricktrans.header.stamp = self.get_clock().now().to_msg()
+        self.broadcaster.sendTransform(self.bricktrans)
