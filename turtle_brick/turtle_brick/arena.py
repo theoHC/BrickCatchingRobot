@@ -13,6 +13,7 @@ from std_srvs.srv import Empty
 ##################### Begin_Citation [3] #####################
 from turtle_brick import physics
 ##################### End_Citation [3] #####################
+import transforms3d
 
 class BrickState(Enum):
     PLACED = 1
@@ -46,6 +47,9 @@ class Arena(Node):
 
         self.declare_parameter('gravity_accel', 5.0)
         self.gravity_accel = self.get_parameter('gravity_accel').value
+
+        self.declare_parameter('platform_radius', 5.0)
+        self.platform_radius = self.get_parameter('platform_radius').value
 
         self.broadcaster = TransformBroadcaster(self)
         self.transformbuffer= Buffer()
@@ -140,6 +144,20 @@ class Arena(Node):
             self.bricktrans.transform.translation.x = self.physics.brick[0]
             self.bricktrans.transform.translation.y = self.physics.brick[1]
             self.bricktrans.transform.translation.z = self.physics.brick[2]
+
+            try:
+                self.platform_to_brick = self.transformbuffer.lookup_transform('platform_link', 'brick', rclpy.time.Time())
+                world_to_platform = self.transformbuffer.lookup_transform('world', 'platform_link', rclpy.time.Time())
+                self.get_logger().info(f'Transform is: {world_to_platform}')
+            except tf2_ros.LookupException:
+                self.get_logger().info('Lookup Exception')
+            except tf2_ros.ConnectivityException:
+                self.get_logger().info('Connectivity Exception')
+            except tf2_ros.ExtrapolationException:
+                self.get_logger().info('Extrapolation Exception')
+            
+            # if abs(self.platform_to_brick.transform.translation.z) < 0.1
+            #     and self.:
 
         self.bricktrans.header.stamp = self.get_clock().now().to_msg()
         self.broadcaster.sendTransform(self.bricktrans)

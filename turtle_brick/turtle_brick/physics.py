@@ -50,3 +50,9 @@ class World:
         self.brick_loc = (self.brick_loc[0] + self.brick_vel[0]*self.dt,
                           self.brick_loc[1] + self.brick_vel[1]*self.dt,
                           self.brick_loc[2] + self.brick_vel[2]*self.dt)
+        
+        if self.brick_loc[2] < 0.0:
+            self.brick_loc = (self.brick_loc[0],
+                              self.brick_loc[1],
+                              0.0)
+            self.brick_vel = (0.0,0.0,0.0)
