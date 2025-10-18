@@ -71,7 +71,7 @@ class TurtleRobot(Node):
         
         self.turtle_commander = self.create_publisher(Twist, '/turtle1/cmd_vel', 10)
 
-        self.odometer = self.create_publisher(Odometry, '/odom', 10)
+        self.odometer = self.create_publisher(Odometry, 'odom', 10)
 
     def pose_callback(self, pose):
         if not self.setup_odom:

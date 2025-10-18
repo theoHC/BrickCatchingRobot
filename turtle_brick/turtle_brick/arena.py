@@ -8,6 +8,8 @@ from tf2_ros.transform_listener import TransformListener
 from tf2_ros.buffer import Buffer
 import tf2_ros
 from geometry_msgs.msg import Transform, TransformStamped
+from turtle_brick_interfaces.srv import Place
+from std_srvs.srv import Empty
 
 class BrickState(Enum):
     PLACED = 1
@@ -54,6 +56,10 @@ class Arena(Node):
         self.bricktrans.header.frame_id = 'world'
         self.bricktrans.child_frame_id = 'brick'
 
+        self.place = self.create_service(Place, 'place', self.place_callback)
+
+        self.drop = self.create_service(Empty, 'drop', self.drop_callback)
+
 
     def wall_timer_callback(self):
         # self.get_logger().info('arena node callback')
@@ -67,7 +73,7 @@ class Arena(Node):
                              self.makecube(1, (-.5, 5.75, .5), (1.0, 13.5, 1.0), r, g, b),
                              self.makecube(2, (5.75, 12.0, .5), (11.5, 1.0, 1.0), r, g, b),
                              self.makecube(3, (12.0, 5.75, .5), (1.0, 13.5, 1.0), r, g, b),
-                             self.makecube(4, (0,0,.25), (.5, .5, .5), br, bg, bb, frame='brick')]
+                             self.makecube(4, (0.0,0.0,0.25), (0.5, 0.5, .5), br, bg, bb, frame='brick')]
         self.marker_publisher.publish(markerarr)
     
     def makecube(self, id, pos, scale, r, g, b, frame='world'):
@@ -104,3 +110,21 @@ class Arena(Node):
 
         self.bricktrans.header.stamp = self.get_clock().now().to_msg()
         self.broadcaster.sendTransform(self.bricktrans)
+
+    def drop_callback(self, request, response):
+        if self.BrickState == BrickState.PLACED:
+            self.get_logger().info('Dropping the brick!')
+            self.BrickState = BrickState.SIM
+        else:
+            self.get_logger().info('Brick already dropped!')
+
+        return response
+    
+    def place_callback(self, request, response):
+        self.BrickState = BrickState.PLACED
+        self.get_logger().info(f'Placing the brick at ({request.point.x}, {request.point.y}, {request.point.z})')
+        self.bricktrans.transform.translation.x = request.point.x
+        self.bricktrans.transform.translation.y = request.point.y
+        self.bricktrans.transform.translation.z = request.point.z
+
+        return response
