@@ -1,3 +1,2 @@
 *.vscode*
-*/urdf/log*
-*/log/*
+**/log/**
