@@ -3,3 +3,5 @@ I collaborates with: Adnet, Saif, Robert, Ben, Derek, Florian, Pushkar
 [1] Syntax for loading from yaml files elucidated by Robert
 
 [2] The loading of parameters and this format of the .yaml shown to me by Han
+
+[3] Syntax provided by Ben

@@ -12,7 +12,8 @@ class World:
         dt - timestep in seconds of the physics simulation
         """
 
-        self.brick=brick
+        self.brick_loc=brick
+        self.brick_vel=(0.0,0.0,0.0)
         self.gravity=gravity
         self.radius=radius
         self.dt=dt
@@ -25,7 +26,7 @@ class World:
         Return:
             (x,y,z) location of the brick
         """
-        return self.brick
+        return self.brick_loc
 
     @brick.setter
     def brick(self, location):
@@ -35,10 +36,17 @@ class World:
         Args:
            location - the (x,y,z) location of the brick
         """
-        self.brick = location
+        self.brick_loc = location
+        self.brick_vel = (0.0,0.0,0.0)
 
     def drop(self):
         """
         Update the brick's location by having it fall in gravity for one timestep
         """
-        pass
+        self.brick_vel = (self.brick_vel[0],
+                          self.brick_vel[1],
+                          self.brick_vel[2] - self.gravity*self.dt)
+        
+        self.brick_loc = (self.brick_loc[0] + self.brick_vel[0]*self.dt,
+                          self.brick_loc[1] + self.brick_vel[1]*self.dt,
+                          self.brick_loc[2] + self.brick_vel[2]*self.dt)

@@ -10,6 +10,9 @@ import tf2_ros
 from geometry_msgs.msg import Transform, TransformStamped
 from turtle_brick_interfaces.srv import Place
 from std_srvs.srv import Empty
+##################### Begin_Citation [3] #####################
+from turtle_brick import physics
+##################### End_Citation [3] #####################
 
 class BrickState(Enum):
     PLACED = 1
@@ -39,6 +42,9 @@ class Arena(Node):
         self.declare_parameter('physics frequency', 250)
         self.physics_frequency = self.get_parameter('physics frequency').value
 
+        self.declare_parameter('gravity_accel', 5.0)
+        self.gravity_accel = self.get_parameter('gravity_accel').value
+
         self.broadcaster = TransformBroadcaster(self)
         self.transformbuffer= Buffer()
         self.transformlistener = TransformListener(self.transformbuffer, self)
@@ -55,6 +61,8 @@ class Arena(Node):
         self.bricktrans = TransformStamped()
         self.bricktrans.header.frame_id = 'world'
         self.bricktrans.child_frame_id = 'brick'
+
+        self.physics = physics.World((0.0, 0.0, 5.0), self.gravity_accel, 5.0, 1/self.physics_frequency)
 
         self.place = self.create_service(Place, 'place', self.place_callback)
 
@@ -107,6 +115,11 @@ class Arena(Node):
     def physics_timer_callback(self):
         if self.BrickState == BrickState.PLACED:
             pass
+        elif self.BrickState == BrickState.SIM:
+            self.physics.drop()
+            self.bricktrans.transform.translation.x = self.physics.brick[0]
+            self.bricktrans.transform.translation.y = self.physics.brick[1]
+            self.bricktrans.transform.translation.z = self.physics.brick[2]
 
         self.bricktrans.header.stamp = self.get_clock().now().to_msg()
         self.broadcaster.sendTransform(self.bricktrans)
@@ -126,5 +139,11 @@ class Arena(Node):
         self.bricktrans.transform.translation.x = request.point.x
         self.bricktrans.transform.translation.y = request.point.y
         self.bricktrans.transform.translation.z = request.point.z
+        self.bricktrans.transform.rotation.x = 0.0
+        self.bricktrans.transform.rotation.y = 0.0
+        self.bricktrans.transform.rotation.z = 0.0
+        self.bricktrans.transform.rotation.w = 1.0
+
+        self.physics.brick = (request.point.x, request.point.y, request.point.z)
 
         return response
