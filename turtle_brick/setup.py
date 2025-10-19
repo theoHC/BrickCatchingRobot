@@ -30,6 +30,7 @@ setup(
         'console_scripts': [
             'arena = turtle_brick.arena:main',
             'turtlebot = turtle_brick.turtle_robot:main'
+            'control = turtle_brick.control:main',
         ],
     },
 )

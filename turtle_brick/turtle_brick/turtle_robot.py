@@ -60,7 +60,7 @@ class TurtleRobot(Node):
 
         self.tilt_listener = self.create_subscription(Tilt, 'tilt', self.tilt_callback, 10)
 
-        self.goal_listener = self.create_subscription(PoseStamped, '/goal_pose', self.goal_callback, 10)
+        self.goal_listener = self.create_subscription(PoseStamped, 'goal_pose', self.goal_callback, 10)
 
         self.timer = self.create_timer(1/self.frequency, self.timer_callback)
 

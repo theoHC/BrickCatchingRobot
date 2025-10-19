@@ -7,17 +7,24 @@ from tf2_ros.buffer import Buffer
 from turtlesim_msgs.msg import Pose
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import PoseStamped
+from enum import Enum
+
+class BotState(Enum):
+    IDLE = 0
+    RETRIEVING = 1
+    RETURNING = 2
+    TILTING = 3
 
 def main(args=None):
     rclpy.init(args=args)
     
-    arena = Arena()
+    control = Control()
     
-    arena.get_logger().info('arena node initializing')
+    control.get_logger().info('control node initializing')
 
-    rclpy.spin(arena)
+    rclpy.spin(control)
     
-    arena.destroy_node()
+    control.destroy_node()
 
     rclpy.shutdown()
 
@@ -45,14 +52,84 @@ class Control(Node):
         self.transformlistener = TransformListener(self.transformbuffer, self)
 
         self.turtle_listener = self.create_subscription(Pose, '/turtle1/pose', self.pose_callback, 10)
+
+        self.goal_broadcaster = self.create_publisher(PoseStamped, 'goal_pose', 10)
+
+        self.marker_publisher = self.create_publisher(Marker, 'visualization_marker', 10)
+
+        self.tilt_publisher = self.create_publisher(Tilt, 'tilt', 10)
+        
+        self.goal = PoseStamped()
+        self.goal.header.frame_id = 'world'
+
+        self.tilt = 0.0
+        
+        self.state = BotState.IDLE
     
     def timer_callback(self):
-        pass
+        disttopose = ((self.goalloc.pose.position.x - self.pose.x)**2 + (self.goalloc.pose.position.y - self.pose.y)**2)**0.5
+        world_to_brick = self.transformbuffer.lookup_transform('world', 'brick', rclpy.time.Time())
+
+        if self.state is BotState.RETRIEVING and disttopose < 0.05 and abs(world_to_brick.transform.translation.z - self.platform_height) < 0.1:
+            
+            self.goal.pose.position.x = 0.0
+            self.goal.pose.position.y = 0.0
+
+            self.goal.header.stamp = self.get_clock().now().to_msg()
+            self.goal_broadcaster.publish(self.goal)
+            self.state = BotState.RETURNING
+        elif self.state is BotState.RETURNING and disttopose < 0.05:
+            self.state = BotState.TILTING
+        elif self.state is BotState.TILTING:
+            if abs(self.tilt) < 1.57:
+                self.tilt += 0.02
+                tiltmsg = Tilt()
+                tiltmsg.angle = self.tilt
+                self.tilt_publisher.publish(tiltmsg)
+            else:
+                self.state = BotState.IDLE
+
 
     def drop_callback(self, msg):
+
+        tiltmsg = Tilt()
+        tiltmsg.angle = 0.0
+        self.tilt_publisher.publish(tiltmsg)
+        self.tilt = 0.0
+
         world_to_brick = self.transformbuffer.lookup_transform('world', 'brick', rclpy.time.Time())
         brick_location = (world_to_brick.transform.translation.x,world_to_brick.transform.translation.y,world_to_brick.transform.translation.z)
         world_to_base_link = self.transformbuffer.lookup_transform('world', 'base_link', rclpy.time.Time())
         base_link_location = (world_to_base_link.transform.translation.x,world_to_base_link.transform.translation.y,world_to_base_link.transform.translation.z)
         
         distance_xy = ((brick_location[0]-base_link_location[0])**2 + (brick_location[1]-base_link_location[1])**2)**0.5
+
+        robot_travel_time = distance_xy / self.max_velocity
+
+        height_diff = brick_location[2] - self.platform_height
+
+        fall_time = (2*height_diff / self.gravity_accel)**0.5
+
+        if robot_travel_time < fall_time:
+            self.goal.pose.position.x = brick_location[0]
+            self.goal.pose.position.y = brick_location[1]
+
+            self.goal.header.stamp = self.get_clock().now().to_msg()
+
+            self.goal_broadcaster.publish(self.goal)
+            self.state = BotState.RETRIEVING
+        else:
+            text = Marker()
+            text.header.frame_id = 'odom'
+            text.ns = 'control'
+            text.id = 0
+            text.type = Marker.TEXT_VIEW_FACING
+            text.action = Marker.ADD
+            text.text = 'Unreachable'
+            text.pose.position.z = 5.0
+
+            text.header.stamp = self.get_clock().now().to_msg()
+            self.marker_publisher.publish(text)
+
+    def pose_callback(self, pose):
+        self.pose = pose
