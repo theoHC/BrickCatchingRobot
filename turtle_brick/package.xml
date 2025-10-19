@@ -14,6 +14,7 @@
   <test_depend>python3-pytest</test_depend>
 
   <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-transforms3d</exec_depend>
 
   <exec_depend>rclpy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
@@ -21,8 +22,6 @@
 
   <exec_depend>turtlesim</exec_depend>
   <exec_depend>turtlesim_msgs</exec_depend>
-
-  <exec_depend>python3-transforms3d</exec_depend>
 
   <export>
     <build_type>ament_python</build_type>

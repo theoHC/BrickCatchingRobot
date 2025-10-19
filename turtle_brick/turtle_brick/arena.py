@@ -7,13 +7,15 @@ from enum import Enum
 from tf2_ros.transform_listener import TransformListener
 from tf2_ros.buffer import Buffer
 import tf2_ros
-from geometry_msgs.msg import Transform, TransformStamped
+from geometry_msgs.msg import TransformStamped
 from turtle_brick_interfaces.srv import Place
 from std_srvs.srv import Empty
+from std_msgs.msg import Empty as EmptyMsg
 ##################### Begin_Citation [3] #####################
 from turtle_brick import physics
 ##################### End_Citation [3] #####################
 import transforms3d
+import numpy as np
 
 class BrickState(Enum):
     PLACED = 1
@@ -50,6 +52,9 @@ class Arena(Node):
 
         self.declare_parameter('platform_radius', 5.0)
         self.platform_radius = self.get_parameter('platform_radius').value
+
+        self.declare_parameter('platform_height', 5.0)
+        self.platform_height = self.get_parameter('platform_height').value
 
         self.broadcaster = TransformBroadcaster(self)
         self.transformbuffer= Buffer()
@@ -137,6 +142,8 @@ class Arena(Node):
         return marker
     
     def physics_timer_callback(self):
+        '''Timer to update the physics simulation of the brick based on its current state.
+        '''
         if self.BrickState == BrickState.PLACED:
             pass
         elif self.BrickState == BrickState.SIM:
@@ -147,15 +154,24 @@ class Arena(Node):
 
             try:
                 self.platform_to_brick = self.transformbuffer.lookup_transform('platform_link', 'brick', rclpy.time.Time())
-            except tf2_ros.LookupException:
-                self.get_logger().info('Lookup Exception')
-            except tf2_ros.ConnectivityException:
-                self.get_logger().info('Connectivity Exception')
-            except tf2_ros.ExtrapolationException:
-                self.get_logger().info('Extrapolation Exception')
+                # self.get_logger().info(f'Transform is: {self.platform_to_brick}')
+
+            finally:
+                pass
             
-            # if abs(self.platform_to_brick.transform.translation.z) < 0.1
-            #     and self.:
+            if abs(self.bricktrans.transform.translation.z - self.platform_height) < 0.05 and self.platform_to_brick.transform.translation.x**2 + self.platform_to_brick.transform.translation.y**2 < self.platform_radius**2 :
+                self.get_logger().info(repr(transformstamped_to_matrix(self.platform_to_brick)))
+                self.BrickState = BrickState.CAUGHT
+                self.platform_to_brick.transform.translation.z = 0.05
+        
+        elif self.BrickState == BrickState.CAUGHT:
+
+            try:
+                self.world_to_platform = self.transformbuffer.lookup_transform('world', 'platform_link', rclpy.time.Time())
+            finally:
+                pass
+
+            self.bricktrans = matrix_to_transformstamped(transformstamped_to_matrix(self.world_to_platform) @ transformstamped_to_matrix(self.platform_to_brick))
 
         self.bricktrans.header.stamp = self.get_clock().now().to_msg()
         self.broadcaster.sendTransform(self.bricktrans)
@@ -197,3 +213,70 @@ class Arena(Node):
         self.physics.brick = (request.point.x, request.point.y, request.point.z)
 
         return response
+
+############ Begin_Citation [4] #############
+
+def transformstamped_to_matrix(t: TransformStamped) -> np.ndarray:
+    '''Convert a TransformStamped message to a 4×4 transformation matrix.
+    Args:
+        t - the TransformStamped message
+    Returns:
+        T - the 4×4 transformation matrix
+    '''
+    # Extract translation
+    trans = np.array([
+        t.transform.translation.x,
+        t.transform.translation.y,
+        t.transform.translation.z
+    ])
+
+    # Extract quaternion (w, x, y, z)
+    q = np.array([
+        t.transform.rotation.w,
+        t.transform.rotation.x,
+        t.transform.rotation.y,
+        t.transform.rotation.z
+    ])
+
+    # Convert quaternion to rotation matrix
+    R = transforms3d.quaternions.quat2mat(q)  # 3×3
+
+    # Build full 4×4 transformation matrix
+    T = transforms3d.affines.compose(trans, R, np.ones(3))  # no scaling
+    return T
+
+def matrix_to_transformstamped(T: np.ndarray,
+                               parent_frame: str = "world",
+                               child_frame: str = "brick") -> TransformStamped:
+    '''Convert a 4×4 transformation matrix to a TransformStamped message.
+    Args:
+        T - the 4×4 transformation matrix
+        parent_frame - the parent frame id
+        child_frame - the child frame id
+    Returns:
+        msg - the TransformStamped message
+    '''
+
+    # Extract translation, rotation, and scale
+    trans, rot, zoom, shear = transforms3d.affines.decompose(T)
+
+    # Convert rotation matrix to quaternion (returns w, x, y, z)
+    q = transforms3d.quaternions.mat2quat(rot)
+
+    # Build the TransformStamped message
+    msg = TransformStamped()
+    msg.header.frame_id = parent_frame
+    msg.child_frame_id = child_frame
+
+    msg.transform.translation.x = trans[0]
+    msg.transform.translation.y = trans[1]
+    msg.transform.translation.z = trans[2]
+
+    msg.transform.rotation.w = q[0]
+    msg.transform.rotation.x = q[1]
+    msg.transform.rotation.y = q[2]
+    msg.transform.rotation.z = q[3]
+
+    return msg
+
+############ End_Citation [4] #############

@@ -38,7 +38,7 @@ class TurtleRobot(Node):
 
         self.declare_parameter('frequency', 100)
         self.frequency = self.get_parameter('frequency').value
-        self.declare_parameter('max_velocity', 1)
+        self.declare_parameter('max_velocity', 1.0)
         self.max_velocity = self.get_parameter('max_velocity').value
         self.declare_parameter('wheel_radius', 0.5)
         self.wheel_radius = self.get_parameter('wheel_radius').value
