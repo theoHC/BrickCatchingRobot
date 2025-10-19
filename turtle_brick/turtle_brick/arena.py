@@ -1,12 +1,11 @@
 import rclpy
 from rclpy.node import Node
 from tf2_ros import TransformBroadcaster
+from tf2_ros.transform_listener import TransformListener
+from tf2_ros.buffer import Buffer
 from visualization_msgs.msg import Marker, MarkerArray
 import colorsys
 from enum import Enum
-from tf2_ros.transform_listener import TransformListener
-from tf2_ros.buffer import Buffer
-import tf2_ros
 from geometry_msgs.msg import TransformStamped
 from turtle_brick_interfaces.srv import Place
 from std_srvs.srv import Empty
@@ -16,6 +15,7 @@ from turtle_brick import physics
 ##################### End_Citation [3] #####################
 import transforms3d
 import numpy as np
+from turtle_brick_interfaces.msg import Tilt
 
 class BrickState(Enum):
     PLACED = 1
@@ -65,6 +65,8 @@ class Arena(Node):
 
         self.marker_publisher = self.create_publisher(MarkerArray, 'visualization_marker_array', 10)
 
+        self.droppub = self.create_publisher(EmptyMsg, 'brick_dropped', 10)
+
         self.h = 1.0
         self.dh = .01
 
@@ -78,6 +80,10 @@ class Arena(Node):
         self.place = self.create_service(Place, 'place', self.place_callback)
 
         self.drop = self.create_service(Empty, 'drop', self.drop_callback)
+
+        self.tilt_listener = self.create_subscription(Tilt, 'tilt', self.tilt_callback, 10)
+
+        self.tilt = 0.0
 
 
     def wall_timer_callback(self):
@@ -163,6 +169,10 @@ class Arena(Node):
                 self.get_logger().info(repr(transformstamped_to_matrix(self.platform_to_brick)))
                 self.BrickState = BrickState.CAUGHT
                 self.platform_to_brick.transform.translation.z = 0.05
+
+                self.physics.brick = (0.0,0.0,self.platform_to_brick.transform.translation.x)
+
+                self.physics.falling = False
         
         elif self.BrickState == BrickState.CAUGHT:
 
@@ -170,8 +180,20 @@ class Arena(Node):
                 self.world_to_platform = self.transformbuffer.lookup_transform('world', 'platform_link', rclpy.time.Time())
             finally:
                 pass
+            
+            self.physics.theta = -1 * self.tilt
+
+            self.physics.drop()
+
+            self.platform_to_brick.transform.translation.x = self.physics.brick[2]
 
             self.bricktrans = matrix_to_transformstamped(transformstamped_to_matrix(self.world_to_platform) @ transformstamped_to_matrix(self.platform_to_brick))
+
+            brickfromplatformdist = np.sqrt((self.platform_to_brick.transform.translation.x + .25)**2 + self.platform_to_brick.transform.translation.y**2)
+
+            if(brickfromplatformdist > self.platform_radius and self.platform_to_brick.transform.translation.x < 0.0):
+                self.get_logger().info('Brick has slid off the platform!')
+                self.BrickState = BrickState.PLACED
 
         self.bricktrans.header.stamp = self.get_clock().now().to_msg()
         self.broadcaster.sendTransform(self.bricktrans)
@@ -187,8 +209,9 @@ class Arena(Node):
         if self.BrickState == BrickState.PLACED:
             self.get_logger().info('Dropping the brick!')
             self.BrickState = BrickState.SIM
-        else:
-            self.get_logger().info('Brick already dropped!')
+            self.physics.falling = True
+
+        self.droppub.publish(EmptyMsg())
 
         return response
     
@@ -211,8 +234,12 @@ class Arena(Node):
         self.bricktrans.transform.rotation.w = 1.0
 
         self.physics.brick = (request.point.x, request.point.y, request.point.z)
+        self.physics.theta = np.pi/2
 
         return response
+    
+    def tilt_callback(self, tilt):
+        self.tilt = tilt.angle
 
 ############ Begin_Citation [4] #############
 
