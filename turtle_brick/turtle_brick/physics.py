@@ -1,25 +1,36 @@
 import numpy as np
 
+
 class World:
     """Keep track of the physics of the world."""
 
-    def __init__(self, brick, gravity, radius, dt, falling = False, theta=np.pi/2):
+    def __init__(self, brick, gravity, radius, dt, falling=False, theta=np.pi / 2):
         """
         Initialize the world.
 
         Args:
-        brick - The (x,y,z) location of the brick
-        gravity - the acceleration due to gravity in m/s^2
-        radius - the radius of the platform
-        dt - timestep in seconds of the physics simulation
-        """
+        ----
+        brick :
+            The (x,y,z) location of the brick
+        gravity :
+            the acceleration due to gravity in m/s^2
+        radius :
+            the radius of the platform
+        dt :
+            timestep in seconds of the physics simulation
+        falling :
+            whether the brick is currently falling (used to constrain z to 0 when it
+            hits the ground, irrelevant when on the platform)
+        theta :
+            the angle of the platform with respect to horizontal in radians
 
-        self.brick_loc=brick
-        self.brick_vel=(0.0,0.0,0.0)
-        self.gravity=gravity
-        self.radius=radius
-        self.dt=dt
-        self.falling=falling
+        """
+        self.brick_loc = brick
+        self.brick_vel = (0.0, 0.0, 0.0)
+        self.gravity = gravity
+        self.radius = radius
+        self.dt = dt
+        self.falling = falling
         self.theta = theta
 
     @property
@@ -28,7 +39,9 @@ class World:
         Get the brick's location.
 
         Return:
+        ------
             (x,y,z) location of the brick
+
         """
         return self.brick_loc
 
@@ -38,25 +51,28 @@ class World:
         Set the brick's location.
 
         Args:
-           location - the (x,y,z) location of the brick
+        ----
+        location :
+            the (x,y,z) location of the brick
+
         """
         self.brick_loc = location
-        self.brick_vel = (0.0,0.0,0.0)
+        self.brick_vel = (0.0, 0.0, 0.0)
 
     def drop(self):
-        """
-        Update the brick's location by having it fall in gravity for one timestep
-        """
-        self.brick_vel = (self.brick_vel[0],
-                          self.brick_vel[1],
-                          self.brick_vel[2] - self.gravity*self.dt*np.sin(self.theta))
-        
-        self.brick_loc = (self.brick_loc[0] + self.brick_vel[0]*self.dt,
-                          self.brick_loc[1] + self.brick_vel[1]*self.dt,
-                          self.brick_loc[2] + self.brick_vel[2]*self.dt)
-        
+        """Update the brick's location by having it fall in gravity for one timestep."""
+        self.brick_vel = (
+            self.brick_vel[0],
+            self.brick_vel[1],
+            self.brick_vel[2] - self.gravity * self.dt * np.sin(self.theta),
+        )
+
+        self.brick_loc = (
+            self.brick_loc[0] + self.brick_vel[0] * self.dt,
+            self.brick_loc[1] + self.brick_vel[1] * self.dt,
+            self.brick_loc[2] + self.brick_vel[2] * self.dt,
+        )
+
         if self.brick_loc[2] < 0.0 and self.falling:
-            self.brick_loc = (self.brick_loc[0],
-                              self.brick_loc[1],
-                              0.0)
-            self.brick_vel = (0.0,0.0,0.0)
+            self.brick_loc = (self.brick_loc[0], self.brick_loc[1], 0.0)
+            self.brick_vel = (0.0, 0.0, 0.0)
