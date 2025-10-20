@@ -189,9 +189,9 @@ class Arena(Node):
 
             self.bricktrans = matrix_to_transformstamped(transformstamped_to_matrix(self.world_to_platform) @ transformstamped_to_matrix(self.platform_to_brick))
 
-            brickfromplatformdist = np.sqrt((self.platform_to_brick.transform.translation.x + .25)**2 + self.platform_to_brick.transform.translation.y**2)
+            brickfromplatformdist = np.sqrt((self.platform_to_brick.transform.translation.x)**2 + self.platform_to_brick.transform.translation.y**2)
 
-            if(brickfromplatformdist > self.platform_radius and self.platform_to_brick.transform.translation.x < 0.0):
+            if(brickfromplatformdist > self.platform_radius + .25):
                 self.get_logger().info('Brick has slid off the platform!')
                 self.BrickState = BrickState.PLACED
 

@@ -78,8 +78,8 @@ class Control(Node):
 
         if self.state is BotState.RETRIEVING and disttopose < 0.05 and abs(world_to_brick.transform.translation.z - self.platform_height) < 0.1:
             
-            self.goal.pose.position.x = 0.0
-            self.goal.pose.position.y = 0.0
+            self.goal.pose.position.x = 5.4
+            self.goal.pose.position.y = 5.4
 
             self.goal.header.stamp = self.get_clock().now().to_msg()
             self.goal_broadcaster.publish(self.goal)
@@ -87,8 +87,8 @@ class Control(Node):
         elif self.state is BotState.RETURNING and disttopose < 0.05:
             self.state = BotState.TILTING
         elif self.state is BotState.TILTING:
-            if abs(self.tilt) < 1.57:
-                self.tilt += 0.02
+            if abs(self.tilt) < .4:
+                self.tilt += 0.01
                 tiltmsg = Tilt()
                 tiltmsg.angle = self.tilt
                 self.tilt_publisher.publish(tiltmsg)
@@ -122,7 +122,7 @@ class Control(Node):
 
         fall_time = (2*height_diff / self.gravity_accel)**0.5
 
-        if robot_travel_time < fall_time:
+        if robot_travel_time < fall_time and brick_location[2] > self.platform_height and 0.0 <= brick_location[0] <= 11.4 and 0.0 <= brick_location[1] <= 11.4:
             self.goal.pose.position.x = brick_location[0]
             self.goal.pose.position.y = brick_location[1]
 
