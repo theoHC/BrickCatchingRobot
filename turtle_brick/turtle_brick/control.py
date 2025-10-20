@@ -1,4 +1,4 @@
-from std_srvs.srv import Empty
+from std_msgs.msg import Empty
 from turtle_brick_interfaces.msg import Tilt
 import rclpy
 from rclpy.node import Node
@@ -59,6 +59,8 @@ class Control(Node):
 
         self.tilt_publisher = self.create_publisher(Tilt, 'tilt', 10)
         
+        self.pose = Pose()
+
         self.goal = PoseStamped()
         self.goal.header.frame_id = 'world'
 
@@ -67,8 +69,12 @@ class Control(Node):
         self.state = BotState.IDLE
     
     def timer_callback(self):
-        disttopose = ((self.goalloc.pose.position.x - self.pose.x)**2 + (self.goalloc.pose.position.y - self.pose.y)**2)**0.5
-        world_to_brick = self.transformbuffer.lookup_transform('world', 'brick', rclpy.time.Time())
+        disttopose = ((self.goal.pose.position.x - self.pose.x)**2 + (self.goal.pose.position.y - self.pose.y)**2)**0.5
+
+        try:
+            world_to_brick = self.transformbuffer.lookup_transform('world', 'brick', rclpy.time.Time())
+        except Exception as e:
+            return
 
         if self.state is BotState.RETRIEVING and disttopose < 0.05 and abs(world_to_brick.transform.translation.z - self.platform_height) < 0.1:
             
@@ -97,14 +103,20 @@ class Control(Node):
         self.tilt_publisher.publish(tiltmsg)
         self.tilt = 0.0
 
-        world_to_brick = self.transformbuffer.lookup_transform('world', 'brick', rclpy.time.Time())
+        try:
+            world_to_brick = self.transformbuffer.lookup_transform('world', 'brick', rclpy.time.Time())
+        except Exception as e:
+            return
         brick_location = (world_to_brick.transform.translation.x,world_to_brick.transform.translation.y,world_to_brick.transform.translation.z)
-        world_to_base_link = self.transformbuffer.lookup_transform('world', 'base_link', rclpy.time.Time())
+        try:
+            world_to_base_link = self.transformbuffer.lookup_transform('world', 'base_link', rclpy.time.Time())
+        except Exception as e:
+            return
         base_link_location = (world_to_base_link.transform.translation.x,world_to_base_link.transform.translation.y,world_to_base_link.transform.translation.z)
         
         distance_xy = ((brick_location[0]-base_link_location[0])**2 + (brick_location[1]-base_link_location[1])**2)**0.5
 
-        robot_travel_time = distance_xy / self.max_velocity
+        robot_travel_time = (distance_xy - self.platform_radius) / self.max_velocity
 
         height_diff = brick_location[2] - self.platform_height
 
