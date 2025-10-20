@@ -138,7 +138,13 @@ class Control(Node):
             text.type = Marker.TEXT_VIEW_FACING
             text.action = Marker.ADD
             text.text = 'Unreachable'
-            text.pose.position.z = 5.0
+            text.pose.position.z = 2.0
+            text.lifetime.sec = 3
+            text.scale.z = 2.0
+            text.color.a = 1.0
+            text.color.r = 1.0
+            text.color.g = 0.0
+            text.color.b = 0.0
 
             text.header.stamp = self.get_clock().now().to_msg()
             self.marker_publisher.publish(text)
