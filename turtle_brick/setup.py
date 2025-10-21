@@ -23,7 +23,7 @@ setup(
     zip_safe=True,
     maintainer='theoHC',
     maintainer_email='theo_coulson@me.com',
-    description='Package for the completion of the homework described at https://nu-msr.github.io/ros_notes/ros2/homework/homework2.html#overview-1-P-11',
+    description='Simulates a robot that picks up falling bricks based on the turtlesim',
     license='Apache-2.0',
     tests_require=['pytest'],
     entry_points={

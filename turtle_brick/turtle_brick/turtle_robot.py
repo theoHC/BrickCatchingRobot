@@ -70,7 +70,7 @@ class TurtleRobot(Node):
 
         self.timer = self.create_timer(1 / self.frequency, self.timer_callback)
 
-        self.bot_joints = self.create_publisher(JointState, '/joint_states', 10)
+        self.bot_joints = self.create_publisher(JointState, 'joint_states', 10)
 
         self.turtle_commander = self.create_publisher(Twist, '/turtle1/cmd_vel', 10)
 

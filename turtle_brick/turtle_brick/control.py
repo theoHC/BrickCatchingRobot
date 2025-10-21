@@ -1,7 +1,7 @@
 from enum import Enum
 
-import rclpy
 from geometry_msgs.msg import PoseStamped
+import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Empty
 from tf2_ros.buffer import Buffer

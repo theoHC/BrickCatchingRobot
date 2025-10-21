@@ -1,8 +1,9 @@
 import colorsys
 from enum import Enum
+
+from geometry_msgs.msg import TransformStamped
 import numpy as np
 import rclpy
-from geometry_msgs.msg import TransformStamped
 from rclpy.node import Node
 from std_msgs.msg import Empty as EmptyMsg
 from std_srvs.srv import Empty
@@ -39,6 +40,8 @@ def main(args=None):
 
 
 class Arena(Node):
+    """Simulate the arena with walls and a falling brick."""
+
     def __init__(self):
         """Set up params, timers, publishers, services, and the physics world."""
         super().__init__('arena')

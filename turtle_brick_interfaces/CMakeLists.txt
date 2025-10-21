@@ -29,7 +29,7 @@ find_package(geometry_msgs REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
 "msg/Tilt.msg"
 "srv/Place.srv"
-DEPENDENCIES 
+DEPENDENCIES
 geometry_msgs
 )
 
