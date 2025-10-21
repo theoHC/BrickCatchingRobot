@@ -57,7 +57,7 @@ class TurtleRobot(Node):
         self.broadcaster = TransformBroadcaster(self)
 
         self.turtle_listener = self.create_subscription(
-            Pose, '/turtle1/pose', self.pose_callback, 10
+            Pose, 'pose', self.pose_callback, 10
         )
 
         self.tilt_listener = self.create_subscription(
@@ -72,7 +72,7 @@ class TurtleRobot(Node):
 
         self.bot_joints = self.create_publisher(JointState, 'joint_states', 10)
 
-        self.turtle_commander = self.create_publisher(Twist, '/turtle1/cmd_vel', 10)
+        self.turtle_commander = self.create_publisher(Twist, 'cmd_vel', 10)
 
         self.odometer = self.create_publisher(Odometry, 'odom', 10)
 

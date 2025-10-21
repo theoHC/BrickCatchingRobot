@@ -9,6 +9,8 @@
 
     <node pkg="turtle_brick" exec="turtlebot">
         <param from="$(find-pkg-share turtle_brick)/turtle.yaml"/>
+        <remap from="pose" to="/turtle1/pose"/>
+        <remap from="cmd_vel" to="/turtle1/cmd_vel"/>
     </node>
 
     <node pkg="turtle_brick" exec="arena">
@@ -17,6 +19,7 @@
     
     <node pkg="turtle_brick" exec="control">
         <param from="$(find-pkg-share turtle_brick)/turtle.yaml"/>
+        <remap from="pose" to="/turtle1/pose"/>
     </node>
 
     <node pkg="rviz2" exec="rviz2" args="-d $(find-pkg-share turtle_brick)/run_turtle.rviz"/>

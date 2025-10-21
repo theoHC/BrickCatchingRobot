@@ -59,7 +59,7 @@ class Control(Node):
         self.transformlistener = TransformListener(self.transformbuffer, self)
 
         self.turtle_listener = self.create_subscription(
-            Pose, '/turtle1/pose', self.pose_callback, 10
+            Pose, 'pose', self.pose_callback, 10
         )
 
         self.goal_broadcaster = self.create_publisher(PoseStamped, 'goal_pose', 10)
