@@ -1,0 +1,13 @@
+<launch>
+    <include file="$(find-pkg-share turtle_brick)/run_turtle.launch.xml"/>
+
+    <node pkg="turtle_brick" exec="arena">
+        <param from="$(find-pkg-share turtle_brick)/turtle.yaml"/>
+    </node>
+    
+    <node pkg="turtle_brick" exec="control">
+        <param from="$(find-pkg-share turtle_brick)/turtle.yaml"/>
+        <remap from="pose" to="/turtle1/pose"/>
+    </node>
+
+</launch>
