@@ -5,3 +5,5 @@ I collaborates with: Adnet, Saif, Robert, Ben, Derek, Florian, Pushkar
 [2] The loading of parameters and this format of the .yaml shown to me by Han
 
 [3] Syntax provided by Ben
+
+[4] Basic URDF syntax gleaned from https://articulatedrobotics.xyz/tutorials/ready-for-ros/urdf/, accessed 10-14-2025

@@ -301,7 +301,7 @@ class Arena(Node):
         self.tilt = tilt.angle
 
 
-# Begin_Citation [4] #
+# Begin_Citation [6] #
 
 
 def transformstamped_to_matrix(t: TransformStamped) -> np.ndarray:
@@ -389,4 +389,4 @@ def matrix_to_transformstamped(
     return msg
 
 
-# End_Citation [4] #
+# End_Citation [6] #
