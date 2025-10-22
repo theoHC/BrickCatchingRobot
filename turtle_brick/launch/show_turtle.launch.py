@@ -1,3 +1,4 @@
+from launch import LaunchDescription  # noqa: I001
 from launch.actions import DeclareLaunchArgument
 from launch.conditions import IfCondition, UnlessCondition
 from launch.substitutions import (
@@ -9,8 +10,6 @@ from launch.substitutions import (
 )
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
-
-from launch import LaunchDescription
 
 
 def generate_launch_description():
