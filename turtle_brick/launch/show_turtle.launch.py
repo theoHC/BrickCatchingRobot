@@ -1,3 +1,4 @@
+# Begin_Citation [7] #
 from launch import LaunchDescription  # noqa: I001
 from launch.actions import DeclareLaunchArgument
 from launch.conditions import IfCondition, UnlessCondition
@@ -70,3 +71,4 @@ def generate_launch_description():
         joint_state_publisher,
         rviz
     ])
+# End_Citation [7] #

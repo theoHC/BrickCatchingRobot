@@ -7,3 +7,7 @@ I collaborates with: Adnet, Saif, Robert, Ben, Derek, Florian, Pushkar
 [3] Syntax provided by Ben
 
 [4] Basic URDF syntax gleaned from https://articulatedrobotics.xyz/tutorials/ready-for-ros/urdf/, accessed 10-14-2025
+
+[6] Transformstamped to matrix conversion implemented by chatgpt accessed 10-16-2025. Chat logs in citations/'Convert transformstamped to matrix.html'
+
+[7] Launchfiles translated from xml to python by chatgpt accessed 10-22-2025. Chat logs in citations/'Convert ros2 xml to python.html'
