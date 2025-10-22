@@ -15,6 +15,7 @@ setup(
                                    'launch/turtle_arena.launch.xml',
                                    'launch/show_turtle.launch.py',
                                    'launch/run_turtle.launch.py',
+                                   'launch/turtle_arena.launch.py',
                                    'urdf/turtle_bot.urdf.xacro',
                                    'urdf/turtle_bot.urdf',
                                    'urdf/usefulstuff.xacro',
