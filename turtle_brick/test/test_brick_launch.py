@@ -8,7 +8,6 @@ from launch_ros.substitutions import FindPackageShare
 import launch_testing
 import pytest
 import rclpy
-from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 
 
 # Mark the launch description generation as a rostest
@@ -23,13 +22,12 @@ def generate_test_description():
         LaunchDescription([
             Node(package='turtle_brick',
                  executable='turtlebot',
-                 parameters=[turtle_yaml],
-                 remappings=[('cmd_vel', '/turtle1/cmd_vel')]),
+                 parameters=[turtle_yaml]),
             launch_testing.actions.ReadyToTest()
             ]))
 
 
-class TestMyTestCaseName(unittest.TestCase):
+class TestCMDVelFrequency(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -45,22 +43,19 @@ class TestMyTestCaseName(unittest.TestCase):
         """Run before every test."""
         self.node = rclpy.create_node('test_node')
 
+        self.node.create_subscription(Twist, '/cmd_vel', self.cmd_vel_callback, 10)
+
+        self.received_msgs = 0
+
     def tearDown(self):
         """Run after every test."""
         self.node.destroy_node()
 
     def test_cmd_vel_freq(self, launch_service, proc_output):
         """Test the frequency at which cmd_vel messages are published."""
-        self.received_msgs = 0
-
-        self.special_callback = MutuallyExclusiveCallbackGroup()
-
-        self.node.create_subscription(Twist, '/turtle1/cmd_vel', self.cmd_vel_callback, 10,
-                                      callback_group=self.special_callback)
-
         start_time = self.node.get_clock().now()
 
-        while self.node.get_clock().now() - start_time > rclpy.duration.Duration(seconds=10):
+        while self.node.get_clock().now() - start_time < rclpy.duration.Duration(seconds=10.0):
             rclpy.spin_once(self.node)
 
         self.node.get_logger().info(f'received messages: {self.received_msgs}')

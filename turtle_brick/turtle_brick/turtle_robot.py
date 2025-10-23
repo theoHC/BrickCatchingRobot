@@ -161,10 +161,6 @@ class TurtleRobot(Node):
                     vel / self.get_parameter('frequency').value / self.wheel_radius
                 )
 
-            self.turtle_commander.publish(turtleTwist)
-
-            self.turtle_commander.publish(turtleTwist)
-
             odometry = Odometry()
             odometry.pose.pose.position.x = self.pose.x
             odometry.pose.pose.position.y = self.pose.y
@@ -173,6 +169,8 @@ class TurtleRobot(Node):
             odometry.header.frame_id = 'odom'
 
             self.odometer.publish(odometry)
+
+        self.turtle_commander.publish(turtleTwist)
 
         # Publish joint states
         joints = JointState()
