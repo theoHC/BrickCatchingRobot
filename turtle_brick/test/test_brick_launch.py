@@ -2,9 +2,7 @@ import unittest
 
 from geometry_msgs.msg import Twist
 from launch import LaunchDescription
-from launch.substitutions import PathJoinSubstitution
 from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
 import launch_testing
 import pytest
 import rclpy
@@ -15,14 +13,11 @@ import rclpy
 # But it still returns a LaunchDescription
 @pytest.mark.rostest
 def generate_test_description():
-    turtle_brick_share = FindPackageShare('turtle_brick')
-    turtle_yaml = PathJoinSubstitution([turtle_brick_share, 'turtle.yaml'])
 
     return (
         LaunchDescription([
             Node(package='turtle_brick',
-                 executable='turtlebot',
-                 parameters=[turtle_yaml]),
+                 executable='turtlebot'),
             launch_testing.actions.ReadyToTest()
             ]))
 
