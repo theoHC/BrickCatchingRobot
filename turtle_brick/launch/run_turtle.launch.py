@@ -1,3 +1,5 @@
+# &&&&&&&&&&&&&& Begin_Citation [7] &&&&&&&&&&&&&&
+
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import FrontendLaunchDescriptionSource
@@ -52,3 +54,4 @@ def generate_launch_description():
         turtlebot_node,
         rviz_node,
     ])
+# &&&&&&&&&&&&&& End_Citation [7] &&&&&&&&&&&&&&

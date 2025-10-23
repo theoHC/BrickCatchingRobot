@@ -1,4 +1,4 @@
-# Begin_Citation [7] #
+# &&&&&&&&&&&&&& Begin_Citation [7] &&&&&&&&&&&&&&
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import FrontendLaunchDescriptionSource
@@ -44,4 +44,4 @@ def generate_launch_description():
         control_node
     ])
 
-# End_Citation [7] #
+# &&&&&&&&&&&&&& End_Citation [7] &&&&&&&&&&&&&&

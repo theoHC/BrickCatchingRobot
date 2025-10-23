@@ -11,9 +11,9 @@ from tf2_ros import TransformBroadcaster
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 import transforms3d
-# Begin_Citation [3] #
+# &&&&&&&&&&&&&& Begin_Citation [3] &&&&&&&&&&&&&&
 from turtle_brick import physics
-# End_Citation [3] #
+# &&&&&&&&&&&&&& End_Citation [3] &&&&&&&&&&&&&&
 from turtle_brick_interfaces.msg import Tilt
 from turtle_brick_interfaces.srv import Place
 from visualization_msgs.msg import Marker, MarkerArray
@@ -301,7 +301,7 @@ class Arena(Node):
         self.tilt = tilt.angle
 
 
-# Begin_Citation [6] #
+# &&&&&&&&&&&&&& Begin_Citation [6] &&&&&&&&&&&&&&
 
 
 def transformstamped_to_matrix(t: TransformStamped) -> np.ndarray:
@@ -389,4 +389,4 @@ def matrix_to_transformstamped(
     return msg
 
 
-# End_Citation [6] #
+# &&&&&&&&&&&&&& End_Citation [6] &&&&&&&&&&&&&&

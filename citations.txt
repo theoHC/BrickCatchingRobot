@@ -1,4 +1,4 @@
-I collaborates with: Adnet, Saif, Robert, Ben, Derek, Florian, Pushkar, Kyle
+I collaborates with: Adnet, Saif, Robert, Ben, Derek, Florian, Pushkar, Kyle, Conor
 
 [1] Syntax for loading from yaml files elucidated by Robert
 
