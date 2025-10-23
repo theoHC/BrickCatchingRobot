@@ -50,13 +50,13 @@ class TestCMDVelFrequency(unittest.TestCase):
         """Test the frequency at which cmd_vel messages are published."""
         start_time = self.node.get_clock().now()
 
-        duration = 10.0
+        duration = 6.0
         while self.node.get_clock().now() - start_time < rclpy.duration.Duration(seconds=duration):
             rclpy.spin_once(self.node)
 
         self.node.get_logger().info(f'received messages: {self.received_msgs}')
 
-        assert abs(self.received_msgs - 100 * duration) < 100
+        assert abs(self.received_msgs - 100 * duration) < 10 * duration
 
     def cmd_vel_callback(self, msg):
         self.received_msgs += 1
