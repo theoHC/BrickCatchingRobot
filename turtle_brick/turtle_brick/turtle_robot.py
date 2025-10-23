@@ -2,7 +2,6 @@ from geometry_msgs.msg import PoseStamped, TransformStamped, Twist, Vector3
 from nav_msgs.msg import Odometry
 from numpy import arctan2
 import rclpy
-from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 from tf2_ros import TransformBroadcaster
@@ -49,8 +48,6 @@ class TurtleRobot(Node):
         self.wheelsteer = 0.0
 
         self.goalloc = None
-
-        self.special_callback = MutuallyExclusiveCallbackGroup()
 
         self.static_broadcaster = StaticTransformBroadcaster(self)
 
