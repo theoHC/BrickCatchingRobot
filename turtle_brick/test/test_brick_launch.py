@@ -23,7 +23,8 @@ def generate_test_description():
         LaunchDescription([
             Node(package='turtle_brick',
                  executable='turtlebot',
-                 parameters=[turtle_yaml]),
+                 parameters=[turtle_yaml],
+                 remappings=[('cmd_vel', '/turtle1/cmd_vel')]),
             launch_testing.actions.ReadyToTest()
             ]))
 
@@ -54,15 +55,17 @@ class TestMyTestCaseName(unittest.TestCase):
 
         self.special_callback = MutuallyExclusiveCallbackGroup()
 
-        self.node.create_subscription(Twist, 'cmd_vel', self.cmd_vel_callback, 10,
+        self.node.create_subscription(Twist, '/turtle1/cmd_vel', self.cmd_vel_callback, 10,
                                       callback_group=self.special_callback)
 
         start_time = self.node.get_clock().now()
 
-        while self.node.get_clock().now() - start_time < rclpy.duration.Duration(seconds=5):
+        while self.node.get_clock().now() - start_time > rclpy.duration.Duration(seconds=10):
             rclpy.spin_once(self.node)
 
-        assert abs(self.received_msgs - 500) < 100000
+        self.node.get_logger().info(f'received messages: {self.received_msgs}')
+
+        assert abs(self.received_msgs - 1000) < 100
 
     def cmd_vel_callback(self, msg):
         self.received_msgs += 1

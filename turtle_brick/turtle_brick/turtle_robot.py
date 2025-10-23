@@ -128,7 +128,8 @@ class TurtleRobot(Node):
 
     def timer_callback(self):
         """Update Rviz location and publish join state."""
-        # self.get_logger().info('Tick callback')
+        turtleTwist = Twist()
+
         if self.setup_odom:
             odom_bot_tf = TransformStamped()
             odom_bot_tf.header.frame_id = 'odom'
@@ -144,8 +145,6 @@ class TurtleRobot(Node):
 
             goalDist = distBetweeinPoints(self.goalloc, (self.pose.x, self.pose.y))
 
-            turtleTwist = Twist()
-
             if goalDist > 0.1:
                 vel = self.get_parameter('max_velocity').value
 
@@ -157,12 +156,12 @@ class TurtleRobot(Node):
                 turtleTwist.linear.x = vectorToGoal[0]
                 turtleTwist.linear.y = vectorToGoal[1]
 
-                self.turtle_commander.publish(turtleTwist)
-
                 self.wheelsteer = arctan2(vectorToGoal[1], vectorToGoal[0])
                 self.curwheel += (
                     vel / self.get_parameter('frequency').value / self.wheel_radius
                 )
+
+            self.turtle_commander.publish(turtleTwist)
 
             self.turtle_commander.publish(turtleTwist)
 
