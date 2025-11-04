@@ -1,7 +1,3 @@
-#MECH450 Homework 2
-
-Author: Theo Coulson
-
 Uses the turtlesim as the basis for simulating a robot which can catch a falling brick upon its platform, and carry it to the center of the arena before tipping it unceremoniously into oblivion.
 
 ## Quickstart
