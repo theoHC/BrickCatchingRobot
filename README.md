@@ -7,10 +7,10 @@ Uses the turtlesim as the basis for simulating a robot which can catch a falling
 
 3. Use  `ros2 service call /drop std_srvs/srv/Empty` to drop the brick
 
-4. Here's a motion picture of a successful catch accompanied by jazz reflecting the energy level of the robot:
+4. Here's a motion picture of a successful catch:
 
 https://github.com/user-attachments/assets/62d45864-6766-446f-9ee3-382832486007
 
-5. Here's a motion picture of a failed catch, similarly accompanied:
+5. Here's a motion picture of a failed catch:
 
 https://github.com/user-attachments/assets/fc3c5fb9-e00c-44f8-9750-3f2e818b9b5a
